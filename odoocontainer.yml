@@ -1,0 +1,23 @@
+---
+  - hosts: odoo
+    remote_user: diafannys
+    become: yes
+    tasks:
+      - name: "Executa o container postgresql"
+        docker_container:
+          name: banco
+          image: postgres:9.4
+          env:
+            POSTGRES_PASSWORD=odoo
+            POSTGRES_USER=odoo
+            PGDATA=/var/lib/postgresql/data/pgdata
+          volumes:
+            - odoo-db-data:/var/lib/postgresql/data/pgdata
+      - name: "Executa o container odoo"
+        docker_container:
+          name: odoo
+          image: odoo
+          links:
+            - "banco:odoo"
+          ports:
+            - "8069:8069"
